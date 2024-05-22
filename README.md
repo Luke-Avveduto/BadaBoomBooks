@@ -69,6 +69,7 @@ optional arguments:
   -h, --help     show this help message and exit
   -O OUTPUT      Path to place organized folders
   -c, --copy     Copy folders instead of renaming them
+  -l, --hardlink Create hardlinks instead of copying the files, -c must also be specified 
   -d, --debug    Enable debugging to log file
   -f, --flatten  Flatten book folders, useful if the player has issues with multi-folder books
   -i, --infotxt  Generate 'info.txt' file, used by SmartAudioBookPlayer to display book summary

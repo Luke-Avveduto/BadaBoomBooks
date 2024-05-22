@@ -10,6 +10,7 @@ import shutil
 import sys
 import time
 import webbrowser
+import os
 
 root_path = Path(sys.argv[0]).resolve().parent
 sys.path.append(str(root_path))
@@ -80,9 +81,9 @@ parser.add_argument('-i', '--infotxt', action='store_true', help="Generate 'info
 parser.add_argument('-o', '--opf', action='store_true', help="Generate 'metadata.opf' file, used by Audiobookshelf to import metadata")
 parser.add_argument('-r', '--rename', action='store_true', help="Rename audio tracks to '## - {title}' format")
 parser.add_argument('-s', '--site', metavar='',  default='both', choices=['audible', 'goodreads', 'both'], help="Specify the site to perform initial searches [audible, goodreads, both]")
+parser.add_argument('-l', '--hardlink', action='store_true',  help='Hardlink source files instead of copying')
 parser.add_argument('-v', '--version', action='version', version=f"Version {__version__}")
 parser.add_argument('folders', metavar='folder', nargs='+', help='Audiobook folder(s) to be organized')
-
 args = parser.parse_args()
 
 if args.output:
@@ -324,7 +325,12 @@ URL: {metadata['url']}""")
     # ----- [--copy] Copy/move book folder ---
     if args.copy:
         print("\nCopying...")
-        shutil.copytree(folder, metadata['final_output'], dirs_exist_ok=True, copy_function=shutil.copy2)
+        if args.hardlink:
+            copy_func = os.link
+            print('Using Hard Links')
+        else:
+            copy_func = shutil.copy2
+        shutil.copytree(folder, metadata['final_output'], dirs_exist_ok=True, copy_function=copy_func)
     else:  # - Move folder (defult) -
         print("\nMoving...")
         try:
